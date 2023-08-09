@@ -11,6 +11,7 @@ using PCI_DMC;
 using PCI_DMC_ERR;
 namespace defect_CALIN
 {
+
     public partial class Form1 : Form
     {
         short existcard = 0, rc;
@@ -28,7 +29,7 @@ namespace defect_CALIN
 
         private void startbtn_Click_Click(object sender, EventArgs e)
         {
-            ushort i, card_no = 0, lMask = 0x1;
+            ushort i, card_no = 0, lMask = 0x1,p=0;
             uint DeviceType = 0, IdentityObject = 0;
 
             //開啟軸卡
@@ -114,7 +115,7 @@ namespace defect_CALIN
                 else
                 {
                     dmc04pi_init();
-                    txtSlaveNum.Text = gNodeNum.ToString();
+                    txtslavenum.Text = gNodeNum.ToString();
                     cmb04PInode.Enabled = true;
                     cmbDRIVERnode.Enabled = true;
                     cmbIOnode.Enabled = true;
@@ -139,12 +140,33 @@ namespace defect_CALIN
         private void btnexit_Click(object sender, EventArgs e)
         {
             ushort i;
-            timer1.Enabled = false;
+            timer4PI.Enabled = false;
             for (i = 0; i < existcard; i++) rc = CPCI_DMC.CS_DMC_01_reset_card(gCardNoList[i]);
 
             CPCI_DMC.CS_DMC_01_close();
             Application.Exit();
         }
+        private void dmc04pi_init()
+        {
 
+            for (ushort nodeid = 1; nodeid <= 4; nodeid++)
+            {
+                switch (nodeid)
+                {
+                    case 4:
+                        rc = CPCI_DMC.CS_DMC_01_set_rm_04pi_opulser_mode(gCardNo, nodeid, 0, 2);//plus/dir
+                        break;
+                    default:
+                        rc = CPCI_DMC.CS_DMC_01_set_rm_04pi_opulser_mode(gCardNo, nodeid, 0, 1);//cw/ccw
+                        break;
+                }
+                /////////////////////////////
+                rc = CPCI_DMC.CS_DMC_01_set_rm_04pi_svon_polarity(gCardNo, nodeid, 0, 1);//SVON 負極性   //low active
+                rc = CPCI_DMC.CS_DMC_01_rm_04pi_set_MEL_polarity(gCardNo, nodeid, 0, 0);//MEL正極性
+                rc = CPCI_DMC.CS_DMC_01_rm_04pi_set_PEL_polarity(gCardNo, nodeid, 0, 0);//PEL正極性
+
+            }
+
+        }
     }
 }
