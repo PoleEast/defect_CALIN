@@ -3,9 +3,25 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
+
+
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
+
+using System.IO;//////WinFileOperate
+using System.Diagnostics;///檢查執行中的程式///
+using System.Runtime.InteropServices;//使用DllImport
+
+//Camera & Parameter
+
+using AForge;
+using AForge.Imaging;
+using AForge.Imaging.Filters;
+
+using GitHub.secile.Video;
 
 using PCI_DMC;
 using PCI_DMC_ERR;
@@ -21,6 +37,18 @@ namespace defect_CALIN
         ushort[] NodeID = new ushort[32];
         byte[] value = new byte[10];
         ushort gNodeNum;
+        //camera//
+        Rectangle S_ROI, T_ROI;
+
+        public int videoDeviceIdx = -1;
+        public int ResolutionIdx = 1;//  1~18
+
+        public double Zoom;
+        public int ZoomType;
+        public int framerate = 0;
+        public int ImgWidth = 0;
+        public int ImgHeight = 0;
+        UsbCamera camera;
 
         public Form1()
         {
@@ -146,6 +174,58 @@ namespace defect_CALIN
             CPCI_DMC.CS_DMC_01_close();
             Application.Exit();
         }
+        private void btnCameraConnect_Click(object sender, EventArgs e)
+        {
+            if (videoDeviceIdx < 0)
+            {
+                MessageBox.Show("No found camera");
+                btnCameraConnect.Enabled = false;
+                return;
+            }
+            else
+                btnCameraConnect.Enabled = true;
+
+            if (!btnCameraConnect.Enabled)
+            {
+                if (videoDeviceIdx != -1)
+                {
+                    UsbCamera.VideoFormat[] formats = UsbCamera.GetVideoFormat(videoDeviceIdx);
+
+                    long ttt = 10000000 / formats[ResolutionIdx].TimePerFrame;
+                    Size aa = formats[ResolutionIdx].Size;
+                    string SubType = formats[ResolutionIdx].SubType;
+                    framerate = Convert.ToInt32(ttt);
+                    ImgWidth = aa.Width;
+                    ImgHeight = aa.Height;
+
+                    txtCamState.Text = SubType + ttt + "fps" + ImgWidth + "x" + ImgHeight;
+
+                    //// create usb camera and start.
+                    camera = new UsbCamera(videoDeviceIdx, formats[ResolutionIdx]);
+                    camera.Start();
+
+                    pictureBox.Width = (int)(ImgWidth / Zoom);
+                    pictureBox.Height = (int)(ImgHeight / Zoom);
+                    //pictureBox1.Width = (int)(ImgWidth / Zoom);
+                    //pictureBox1.Height = (int)(ImgHeight / Zoom);
+                    //pictureBox4.Width = (int)(ImgWidth / Zoom);
+                    //pictureBox4.Height = (int)(ImgHeight / Zoom);
+
+
+                    ////UI  
+                    timer_Inspect.Enabled = true; //開攝影機即啟動Timer
+
+                    S_ROI = new Rectangle(750, 480, 435, 80);
+                }
+            }
+            else
+            {
+                camera.Stop();
+                timer_Inspect.Enabled = false; //關攝影機即停止Timer
+            }
+
+        }
+
         private void dmc04pi_init()
         {
 
@@ -161,12 +241,17 @@ namespace defect_CALIN
                         break;
                 }
                 /////////////////////////////
+                //Cmdreset(nodeid)
                 rc = CPCI_DMC.CS_DMC_01_set_rm_04pi_svon_polarity(gCardNo, nodeid, 0, 1);//SVON 負極性   //low active
                 rc = CPCI_DMC.CS_DMC_01_rm_04pi_set_MEL_polarity(gCardNo, nodeid, 0, 0);//MEL正極性
                 rc = CPCI_DMC.CS_DMC_01_rm_04pi_set_PEL_polarity(gCardNo, nodeid, 0, 0);//PEL正極性
 
             }
-
         }
+        //private void Cmdreset(ushort nodeid)
+        //{
+        //    CPCI_DMC.CS_DMC_01_set_position(gCardNo, nodeid, 0, 0);
+        //    CPCI_DMC.CS_DMC_01_set_command(gCardNo, nodeid, 0, 0);
+        //}
     }
 }

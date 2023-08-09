@@ -37,6 +37,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
+      <HintPath>packages\AForge.2.2.5\lib\AForge.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b, processorArchitecture=MSIL">
+      <HintPath>packages\AForge.Imaging.2.2.5\lib\AForge.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
+      <HintPath>packages\AForge.Math.2.2.5\lib\AForge.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="AForge.Video, Version=2.2.5.0, Culture=neutral, PublicKeyToken=cbfb6e07d173c401, processorArchitecture=MSIL">
+      <HintPath>packages\AForge.Video.2.2.5\lib\AForge.Video.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.19.6.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>packages\Google.Protobuf.3.19.6\lib\net45\Google.Protobuf.dll</HintPath>
     </Reference>
@@ -124,6 +136,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\CCD\UsbCamera\UsbCamera.cs" />
     <Compile Include="src\DMC\PCI_DMC.cs" />
     <Compile Include="src\DMC\PCI_DMC_ERR.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -149,6 +162,69 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="src\CCD\UsbCamera\.git\config" />
+    <None Include="src\CCD\UsbCamera\.git\description" />
+    <None Include="src\CCD\UsbCamera\.git\HEAD" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\applypatch-msg.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\commit-msg.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\fsmonitor-watchman.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\post-update.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\pre-applypatch.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\pre-commit.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\pre-push.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\pre-rebase.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\pre-receive.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\prepare-commit-msg.sample" />
+    <None Include="src\CCD\UsbCamera\.git\hooks\update.sample" />
+    <None Include="src\CCD\UsbCamera\.git\index" />
+    <None Include="src\CCD\UsbCamera\.git\info\exclude" />
+    <None Include="src\CCD\UsbCamera\.git\logs\HEAD" />
+    <None Include="src\CCD\UsbCamera\.git\logs\refs\heads\master" />
+    <None Include="src\CCD\UsbCamera\.git\logs\refs\remotes\origin\HEAD" />
+    <None Include="src\CCD\UsbCamera\.git\objects\02\94f31ab2db3dce18b212eefb27912166de869f" />
+    <None Include="src\CCD\UsbCamera\.git\objects\03\0ac587e5380e6d9893f718ab79438b54981637" />
+    <None Include="src\CCD\UsbCamera\.git\objects\05\46d38757377142abd949e6f6bd79593e5752de" />
+    <None Include="src\CCD\UsbCamera\.git\objects\06\82685fba5f34787c2c81a68dd79248fa6d33d7" />
+    <None Include="src\CCD\UsbCamera\.git\objects\10\0b2d10df289e30066d3ae374a03e87df9977f9" />
+    <None Include="src\CCD\UsbCamera\.git\objects\14\82bb4ab9475c5c513d997c6e3e88c56fd1fcc3" />
+    <None Include="src\CCD\UsbCamera\.git\objects\16\2d7767e714f81abdda62d9cf3c92a600c51af8" />
+    <None Include="src\CCD\UsbCamera\.git\objects\1b\2a147c120151850c19f085e4188dfeb61c330a" />
+    <None Include="src\CCD\UsbCamera\.git\objects\25\d3d4a0f56b7b6cf6efe456f9e3e826c5aeec4a" />
+    <None Include="src\CCD\UsbCamera\.git\objects\2d\314b5c9c7c29b447a5deb3bb19325c66ef06e3" />
+    <None Include="src\CCD\UsbCamera\.git\objects\30\2c98ee3d31aac570406cfd9933121048e38502" />
+    <None Include="src\CCD\UsbCamera\.git\objects\3b\68b242628c6c34ae7515f76592ddd765efa98f" />
+    <None Include="src\CCD\UsbCamera\.git\objects\3e\e90b02eb1f9b42976723b6342f02ea007fb21a" />
+    <None Include="src\CCD\UsbCamera\.git\objects\42\961af5fc1f4f4e0b6af79638d2e690e05257e8" />
+    <None Include="src\CCD\UsbCamera\.git\objects\43\a46a8694b4fdcdb4b452f03aa5cf7470cf6cc0" />
+    <None Include="src\CCD\UsbCamera\.git\objects\47\9412d5207fa59042d91296b09a3e51edb5748d" />
+    <None Include="src\CCD\UsbCamera\.git\objects\4c\eeacec6df512ee2e6fe4a398174058150a43ab" />
+    <None Include="src\CCD\UsbCamera\.git\objects\4d\f51bccf9deb801e928c8063a8261c9b819c2cd" />
+    <None Include="src\CCD\UsbCamera\.git\objects\52\2597093ea5f1687fc4735eff638d940d4827ff" />
+    <None Include="src\CCD\UsbCamera\.git\objects\54\0e180a42d782085deba2f31cb2908e9edf81fd" />
+    <None Include="src\CCD\UsbCamera\.git\objects\74\53374e829de8136ca42b84e2f2e80f950fe6f6" />
+    <None Include="src\CCD\UsbCamera\.git\objects\76\72323f62abe98c88d8333373b2474918edae33" />
+    <None Include="src\CCD\UsbCamera\.git\objects\76\df590668d442a5aec10769596f438ce755ad52" />
+    <None Include="src\CCD\UsbCamera\.git\objects\77\66c7386c8203c8ff9bbe1cb9555321eab363e1" />
+    <None Include="src\CCD\UsbCamera\.git\objects\98\d6c1e37870ad2abbf1029bb7a70129d197449a" />
+    <None Include="src\CCD\UsbCamera\.git\objects\a3\3d3670d5b3f5bff259bf2dee81e9a32abc8dd2" />
+    <None Include="src\CCD\UsbCamera\.git\objects\a9\635f8cb2d92a8a800a0d293bb7ff1ff213313a" />
+    <None Include="src\CCD\UsbCamera\.git\objects\ae\a4b682736dbc990ef3044a32da9151dd5c10ff" />
+    <None Include="src\CCD\UsbCamera\.git\objects\b5\c5463eaecd864ac363f9d71869b1d2a8e486ca" />
+    <None Include="src\CCD\UsbCamera\.git\objects\bb\93ab67b213a01c4cbb40e0eee62ba242f7753f" />
+    <None Include="src\CCD\UsbCamera\.git\objects\c5\f448dc9186a876dda639631dabddc82b59bb6b" />
+    <None Include="src\CCD\UsbCamera\.git\objects\cd\0f3386b54e758608ac36d880ff51f1cd96c21e" />
+    <None Include="src\CCD\UsbCamera\.git\objects\cd\97380a78e9a1553cad3fd6397ba1d05c086eed" />
+    <None Include="src\CCD\UsbCamera\.git\objects\d2\932790695a7f3f7b1c74039eaa6b9d108a4439" />
+    <None Include="src\CCD\UsbCamera\.git\objects\e1\ac585fe93c64e5021592ca3f38f59a7c22c7f9" />
+    <None Include="src\CCD\UsbCamera\.git\objects\f1\ef50d92fadbd7921688b06796c4cd871b96d82" />
+    <None Include="src\CCD\UsbCamera\.git\objects\f2\a70b0bbcd0c3744d326a6c1303e27128a930b9" />
+    <None Include="src\CCD\UsbCamera\.git\objects\f2\eb45dbbb60d10fc2caf3c4cca034da531a372b" />
+    <None Include="src\CCD\UsbCamera\.git\objects\ff\9cce0b73b0d06a21cfddc7f508c0dd82d86839" />
+    <None Include="src\CCD\UsbCamera\.git\packed-refs" />
+    <None Include="src\CCD\UsbCamera\.git\refs\heads\master" />
+    <None Include="src\CCD\UsbCamera\.git\refs\remotes\origin\HEAD" />
+    <None Include="src\CCD\UsbCamera\LICENSE" />
+    <None Include="src\CCD\UsbCamera\README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -156,7 +232,12 @@
   <ItemGroup>
     <Content Include="src\ico\8703971_camera_dynamic_color_icon.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="src\CCD\UsbCamera\.git\branches\" />
+    <Folder Include="src\CCD\UsbCamera\.git\objects\info\" />
+    <Folder Include="src\CCD\UsbCamera\.git\objects\pack\" />
+    <Folder Include="src\CCD\UsbCamera\.git\refs\tags\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
