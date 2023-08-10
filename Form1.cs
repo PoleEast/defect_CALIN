@@ -25,11 +25,23 @@ using GitHub.secile.Video;
 
 using PCI_DMC;
 using PCI_DMC_ERR;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace defect_CALIN
 {
 
     public partial class Form1 : Form
     {
+        ///////讀寫INI檔/////////////////
+        [DllImport("kernel32")]
+        private static extern long WritePrivateProfileString(string section,
+            string key, string val, string filePath);
+        [DllImport("kernel32")]
+        private static extern int GetPrivateProfileString(string section,
+                 string key, string def, StringBuilder retVal,
+            int size, string filePath);
+        ///////usb camera//////
+        Rectangle S_ROI, T_ROI;
         short existcard = 0, rc;
         ushort gCardNo = 0, DeviceInfo = 0;
         ushort[] gCardNoList = new ushort[16];
@@ -38,7 +50,6 @@ namespace defect_CALIN
         byte[] value = new byte[10];
         ushort gNodeNum;
         //camera//
-        Rectangle S_ROI, T_ROI;
 
         public int videoDeviceIdx = -1;
         public int ResolutionIdx = 1;//  1~18
@@ -54,8 +65,36 @@ namespace defect_CALIN
         {
             InitializeComponent();
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            ////////檢查執行中的程式//////
+            try
+            {
+                Process[] process2 = Process.GetProcessesByName("cm100");///檢查執行中的程式
+                if (process2.Length >= 2)  // 重複開啟
+                {
+                    MessageBox.Show("重複開啟程式！", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Application.Exit();
+                    Environment.Exit(Environment.ExitCode);
 
-        private void startbtn_Click_Click(object sender, EventArgs e)
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            //////////讀設定/////////////
+            Read_INI_Set();
+
+            ///////usb   ccd//////////////////////
+            Zoom = 4.0;
+            CameraInit();
+
+            //startbtn_Click(sender, e);
+        }
+
+        private void startbtn_Click(object sender, EventArgs e)
         {
             ushort i, card_no = 0, lMask = 0x1,p=0;
             uint DeviceType = 0, IdentityObject = 0;
@@ -165,6 +204,12 @@ namespace defect_CALIN
                 }
             }
         }
+
+        private void cmbCameraID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void btnexit_Click(object sender, EventArgs e)
         {
             ushort i;
@@ -247,6 +292,46 @@ namespace defect_CALIN
                 rc = CPCI_DMC.CS_DMC_01_rm_04pi_set_PEL_polarity(gCardNo, nodeid, 0, 0);//PEL正極性
 
             }
+        }
+        void CameraInit()
+        {
+            //// 获取所有的摄像头
+            string[] devices = UsbCamera.FindDevices();
+            foreach (string device in devices)
+            {
+                cmbCameraID.Items.Add(device);
+            }
+        }
+        private void Read_INI_Set()
+        {
+            richText_message.Text = "讀初始設定資料  \n" + richText_message.Text;
+            string iniPath = @".\setup\config.ini";
+            Read_ini_Setup(iniPath);
+
+        }
+        private void Read_ini_Setup(string iniPath)
+        {
+
+            StringBuilder data = new StringBuilder(255);
+            //讀出ini
+
+            string section = "setting";
+
+            GetPrivateProfileString(section, "txtPOS1s", "0", data, 255, iniPath);
+
+            GetPrivateProfileString(section, "txtPOS2s", "0", data, 255, iniPath);
+
+            GetPrivateProfileString(section, "txtPOS3s", "0", data, 255, iniPath);
+
+            GetPrivateProfileString(section, "txtPOS4s", "0", data, 255, iniPath);
+
+            GetPrivateProfileString(section, "txtPOS5s", "0", data, 255, iniPath);
+
+            GetPrivateProfileString(section, "txtPOS6s", "0", data, 255, iniPath);
+
+            GetPrivateProfileString(section, "txtPOS7s", "0", data, 255, iniPath);
+
+            GetPrivateProfileString(section, "txtPOS8s", "0", data, 255, iniPath);
         }
         //private void Cmdreset(ushort nodeid)
         //{
