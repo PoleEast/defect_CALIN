@@ -32,14 +32,6 @@ namespace defect_CALIN
 
     public partial class Form1 : Form
     {
-        ///////讀寫INI檔/////////////////
-        [DllImport("kernel32")]
-        private static extern long WritePrivateProfileString(string section,
-            string key, string val, string filePath);
-        [DllImport("kernel32")]
-        private static extern int GetPrivateProfileString(string section,
-                 string key, string def, StringBuilder retVal,
-            int size, string filePath);
         ///////usb camera//////
         Rectangle S_ROI, T_ROI;
         short existcard = 0, rc;
@@ -83,14 +75,12 @@ namespace defect_CALIN
             {
                 MessageBox.Show(ex.Message);
             }
-
             //////////讀設定/////////////
-            Read_INI_Set();
+            Init.Read_INI_Set();
 
             ///////usb   ccd//////////////////////
             Zoom = 4.0;
-            CameraInit();
-
+            Init.CameraInit(ref cmbCameraID);
             //startbtn_Click(sender, e);
         }
 
@@ -181,7 +171,7 @@ namespace defect_CALIN
                 }
                 else
                 {
-                    dmc04pi_init();
+                    Init.dmc04pi_init(ref gCardNo);
                     txtslavenum.Text = gNodeNum.ToString();
                     cmb04PInode.Enabled = true;
                     cmbDRIVERnode.Enabled = true;
@@ -191,14 +181,12 @@ namespace defect_CALIN
                     cmbDRIVERnode.SelectedIndex = 0;
                     cmbIOnode.SelectedIndex = 0;
 
-                    timer4PI.Enabled = true;
                     DMCtimer.Enabled = true;
                     /////io_active////////////////////
                     ushort nodeid, SlotID = 0, Enable;
                     nodeid = 9;
                     Enable = 1;
                     rc = CPCI_DMC.CS_DMC_01_set_rm_output_active(gCardNo, nodeid, SlotID, Enable);
-                    timerIO.Enabled = true;
 
 
                 }
@@ -207,13 +195,30 @@ namespace defect_CALIN
 
         private void cmbCameraID_SelectedIndexChanged(object sender, EventArgs e)
         {
+            videoDeviceIdx = cmbCameraID.SelectedIndex;
+            if (videoDeviceIdx != -1)
+            {
+                UsbCamera.VideoFormat[] formats = UsbCamera.GetVideoFormat(videoDeviceIdx);
+                cmbCameraID.Items.Clear();
+                foreach (UsbCamera.VideoFormat elme in formats)
+                {
+                    long ttt = 10000000 / elme.TimePerFrame;
+                    Size aa = elme.Size;
+                    string SubType = elme.SubType;
+                    framerate = Convert.ToInt32(ttt);
+                    ImgWidth = aa.Width;
+                    ImgHeight = aa.Height;
 
+                    string deviceDATA = SubType + ttt + "fps" + ImgWidth + "x" + ImgHeight;
+                    cmbCameraID.Items.Add(deviceDATA);
+                }
+            }
         }
 
+        //close Application
         private void btnexit_Click(object sender, EventArgs e)
         {
             ushort i;
-            timer4PI.Enabled = false;
             for (i = 0; i < existcard; i++) rc = CPCI_DMC.CS_DMC_01_reset_card(gCardNoList[i]);
 
             CPCI_DMC.CS_DMC_01_close();
@@ -221,6 +226,7 @@ namespace defect_CALIN
         }
         private void btnCameraConnect_Click(object sender, EventArgs e)
         {
+            //// Check if a camera is connected
             if (videoDeviceIdx < 0)
             {
                 MessageBox.Show("No found camera");
@@ -237,11 +243,11 @@ namespace defect_CALIN
                     UsbCamera.VideoFormat[] formats = UsbCamera.GetVideoFormat(videoDeviceIdx);
 
                     long ttt = 10000000 / formats[ResolutionIdx].TimePerFrame;
-                    Size aa = formats[ResolutionIdx].Size;
+                    Size fmtSize = formats[ResolutionIdx].Size;
                     string SubType = formats[ResolutionIdx].SubType;
                     framerate = Convert.ToInt32(ttt);
-                    ImgWidth = aa.Width;
-                    ImgHeight = aa.Height;
+                    ImgWidth = fmtSize.Width;
+                    ImgHeight = fmtSize.Height;
 
                     txtCamState.Text = SubType + ttt + "fps" + ImgWidth + "x" + ImgHeight;
 
@@ -269,69 +275,6 @@ namespace defect_CALIN
                 timer_Inspect.Enabled = false; //關攝影機即停止Timer
             }
 
-        }
-
-        private void dmc04pi_init()
-        {
-
-            for (ushort nodeid = 1; nodeid <= 4; nodeid++)
-            {
-                switch (nodeid)
-                {
-                    case 4:
-                        rc = CPCI_DMC.CS_DMC_01_set_rm_04pi_opulser_mode(gCardNo, nodeid, 0, 2);//plus/dir
-                        break;
-                    default:
-                        rc = CPCI_DMC.CS_DMC_01_set_rm_04pi_opulser_mode(gCardNo, nodeid, 0, 1);//cw/ccw
-                        break;
-                }
-                /////////////////////////////
-                //Cmdreset(nodeid)
-                rc = CPCI_DMC.CS_DMC_01_set_rm_04pi_svon_polarity(gCardNo, nodeid, 0, 1);//SVON 負極性   //low active
-                rc = CPCI_DMC.CS_DMC_01_rm_04pi_set_MEL_polarity(gCardNo, nodeid, 0, 0);//MEL正極性
-                rc = CPCI_DMC.CS_DMC_01_rm_04pi_set_PEL_polarity(gCardNo, nodeid, 0, 0);//PEL正極性
-
-            }
-        }
-        void CameraInit()
-        {
-            //// 获取所有的摄像头
-            string[] devices = UsbCamera.FindDevices();
-            foreach (string device in devices)
-            {
-                cmbCameraID.Items.Add(device);
-            }
-        }
-        private void Read_INI_Set()
-        {
-            richText_message.Text = "讀初始設定資料  \n" + richText_message.Text;
-            string iniPath = @".\setup\config.ini";
-            Read_ini_Setup(iniPath);
-
-        }
-        private void Read_ini_Setup(string iniPath)
-        {
-
-            StringBuilder data = new StringBuilder(255);
-            //讀出ini
-
-            string section = "setting";
-
-            GetPrivateProfileString(section, "txtPOS1s", "0", data, 255, iniPath);
-
-            GetPrivateProfileString(section, "txtPOS2s", "0", data, 255, iniPath);
-
-            GetPrivateProfileString(section, "txtPOS3s", "0", data, 255, iniPath);
-
-            GetPrivateProfileString(section, "txtPOS4s", "0", data, 255, iniPath);
-
-            GetPrivateProfileString(section, "txtPOS5s", "0", data, 255, iniPath);
-
-            GetPrivateProfileString(section, "txtPOS6s", "0", data, 255, iniPath);
-
-            GetPrivateProfileString(section, "txtPOS7s", "0", data, 255, iniPath);
-
-            GetPrivateProfileString(section, "txtPOS8s", "0", data, 255, iniPath);
         }
         //private void Cmdreset(ushort nodeid)
         //{

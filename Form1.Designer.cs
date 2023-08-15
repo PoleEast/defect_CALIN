@@ -37,7 +37,6 @@
             this.CmbCardNo = new System.Windows.Forms.ComboBox();
             this.txtcardnum = new System.Windows.Forms.TextBox();
             this.txtslavenum = new System.Windows.Forms.TextBox();
-            this.timer4PI = new System.Windows.Forms.Timer(this.components);
             this.label4 = new System.Windows.Forms.Label();
             this.cmb04PInode = new System.Windows.Forms.ComboBox();
             this.cmbDRIVERnode = new System.Windows.Forms.ComboBox();
@@ -45,7 +44,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.cmbIOnode = new System.Windows.Forms.ComboBox();
             this.DMCtimer = new System.Windows.Forms.Timer(this.components);
-            this.timerIO = new System.Windows.Forms.Timer(this.components);
             this.btnCameraConnect = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.cmbCameraID = new System.Windows.Forms.ComboBox();
@@ -86,7 +84,7 @@
             this.label1.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.label1.Location = new System.Drawing.Point(214, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 19);
+            this.label1.Size = new System.Drawing.Size(65, 16);
             this.label1.TabIndex = 3;
             this.label1.Text = "Card num:";
             // 
@@ -96,7 +94,7 @@
             this.label2.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.label2.Location = new System.Drawing.Point(214, 100);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(71, 19);
+            this.label2.Size = new System.Drawing.Size(58, 16);
             this.label2.TabIndex = 4;
             this.label2.Text = "Card No:";
             // 
@@ -106,7 +104,7 @@
             this.label3.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.label3.Location = new System.Drawing.Point(214, 167);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(85, 19);
+            this.label3.Size = new System.Drawing.Size(68, 16);
             this.label3.TabIndex = 5;
             this.label3.Text = "Slave num:";
             // 
@@ -116,7 +114,7 @@
             this.CmbCardNo.Location = new System.Drawing.Point(317, 100);
             this.CmbCardNo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.CmbCardNo.Name = "CmbCardNo";
-            this.CmbCardNo.Size = new System.Drawing.Size(136, 27);
+            this.CmbCardNo.Size = new System.Drawing.Size(136, 24);
             this.CmbCardNo.TabIndex = 6;
             // 
             // txtcardnum
@@ -125,7 +123,7 @@
             this.txtcardnum.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtcardnum.Name = "txtcardnum";
             this.txtcardnum.ReadOnly = true;
-            this.txtcardnum.Size = new System.Drawing.Size(136, 27);
+            this.txtcardnum.Size = new System.Drawing.Size(136, 23);
             this.txtcardnum.TabIndex = 7;
             // 
             // txtslavenum
@@ -134,7 +132,7 @@
             this.txtslavenum.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtslavenum.Name = "txtslavenum";
             this.txtslavenum.ReadOnly = true;
-            this.txtslavenum.Size = new System.Drawing.Size(136, 27);
+            this.txtslavenum.Size = new System.Drawing.Size(136, 23);
             this.txtslavenum.TabIndex = 8;
             // 
             // label4
@@ -142,7 +140,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(214, 217);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(102, 19);
+            this.label4.Size = new System.Drawing.Size(83, 16);
             this.label4.TabIndex = 9;
             this.label4.Text = "04pi Node ID";
             // 
@@ -152,7 +150,7 @@
             this.cmb04PInode.Location = new System.Drawing.Point(317, 209);
             this.cmb04PInode.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmb04PInode.Name = "cmb04PInode";
-            this.cmb04PInode.Size = new System.Drawing.Size(136, 27);
+            this.cmb04PInode.Size = new System.Drawing.Size(136, 24);
             this.cmb04PInode.TabIndex = 10;
             // 
             // cmbDRIVERnode
@@ -161,7 +159,7 @@
             this.cmbDRIVERnode.Location = new System.Drawing.Point(317, 264);
             this.cmbDRIVERnode.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbDRIVERnode.Name = "cmbDRIVERnode";
-            this.cmbDRIVERnode.Size = new System.Drawing.Size(136, 27);
+            this.cmbDRIVERnode.Size = new System.Drawing.Size(136, 24);
             this.cmbDRIVERnode.TabIndex = 11;
             // 
             // label5
@@ -169,7 +167,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(214, 272);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(88, 19);
+            this.label5.Size = new System.Drawing.Size(70, 16);
             this.label5.TabIndex = 12;
             this.label5.Text = "motor num";
             // 
@@ -178,7 +176,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(214, 323);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(93, 19);
+            this.label6.Size = new System.Drawing.Size(76, 16);
             this.label6.TabIndex = 13;
             this.label6.Text = "I/O Node ID";
             // 
@@ -188,7 +186,7 @@
             this.cmbIOnode.Location = new System.Drawing.Point(317, 315);
             this.cmbIOnode.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbIOnode.Name = "cmbIOnode";
-            this.cmbIOnode.Size = new System.Drawing.Size(136, 27);
+            this.cmbIOnode.Size = new System.Drawing.Size(136, 24);
             this.cmbIOnode.TabIndex = 14;
             // 
             // DMCtimer
@@ -213,7 +211,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(214, 369);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(82, 19);
+            this.label7.Size = new System.Drawing.Size(66, 16);
             this.label7.TabIndex = 16;
             this.label7.Text = "Camera ID";
             // 
@@ -223,7 +221,7 @@
             this.cmbCameraID.Location = new System.Drawing.Point(317, 361);
             this.cmbCameraID.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbCameraID.Name = "cmbCameraID";
-            this.cmbCameraID.Size = new System.Drawing.Size(136, 27);
+            this.cmbCameraID.Size = new System.Drawing.Size(136, 24);
             this.cmbCameraID.TabIndex = 17;
             this.cmbCameraID.SelectedIndexChanged += new System.EventHandler(this.cmbCameraID_SelectedIndexChanged);
             // 
@@ -233,7 +231,7 @@
             this.txtCamState.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtCamState.Name = "txtCamState";
             this.txtCamState.ReadOnly = true;
-            this.txtCamState.Size = new System.Drawing.Size(136, 27);
+            this.txtCamState.Size = new System.Drawing.Size(136, 23);
             this.txtCamState.TabIndex = 18;
             // 
             // pictureBox
@@ -254,7 +252,7 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1023, 570);
             this.Controls.Add(this.richText_message);
@@ -298,7 +296,6 @@
         private System.Windows.Forms.ComboBox CmbCardNo;
         private System.Windows.Forms.TextBox txtcardnum;
         private System.Windows.Forms.TextBox txtslavenum;
-        private System.Windows.Forms.Timer timer4PI;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cmb04PInode;
         private System.Windows.Forms.ComboBox cmbDRIVERnode;
@@ -306,7 +303,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbIOnode;
         private System.Windows.Forms.Timer DMCtimer;
-        private System.Windows.Forms.Timer timerIO;
         private System.Windows.Forms.Button btnCameraConnect;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cmbCameraID;
