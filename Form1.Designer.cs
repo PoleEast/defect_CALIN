@@ -51,6 +51,25 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.timer_Inspect = new System.Windows.Forms.Timer(this.components);
             this.richText_message = new System.Windows.Forms.RichTextBox();
+            this.btnPmove = new System.Windows.Forms.Button();
+            this.btnNmove = new System.Windows.Forms.Button();
+            this.cboDIST = new System.Windows.Forms.TextBox();
+            this.txtMaxVel = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.btnRepeat = new System.Windows.Forms.Button();
+            this.btnStop = new System.Windows.Forms.Button();
+            this.btnSvon = new System.Windows.Forms.Button();
+            this.txtERR = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.txtcommand = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtspeed = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.lbxCam = new System.Windows.Forms.ListBox();
+            this.timer4PI = new System.Windows.Forms.Timer(this.components);
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.bntResetPos = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -84,7 +103,7 @@
             this.label1.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.label1.Location = new System.Drawing.Point(214, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 16);
+            this.label1.Size = new System.Drawing.Size(82, 19);
             this.label1.TabIndex = 3;
             this.label1.Text = "Card num:";
             // 
@@ -94,7 +113,7 @@
             this.label2.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.label2.Location = new System.Drawing.Point(214, 100);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 16);
+            this.label2.Size = new System.Drawing.Size(71, 19);
             this.label2.TabIndex = 4;
             this.label2.Text = "Card No:";
             // 
@@ -104,7 +123,7 @@
             this.label3.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.label3.Location = new System.Drawing.Point(214, 167);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(68, 16);
+            this.label3.Size = new System.Drawing.Size(85, 19);
             this.label3.TabIndex = 5;
             this.label3.Text = "Slave num:";
             // 
@@ -114,7 +133,7 @@
             this.CmbCardNo.Location = new System.Drawing.Point(317, 100);
             this.CmbCardNo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.CmbCardNo.Name = "CmbCardNo";
-            this.CmbCardNo.Size = new System.Drawing.Size(136, 24);
+            this.CmbCardNo.Size = new System.Drawing.Size(136, 27);
             this.CmbCardNo.TabIndex = 6;
             // 
             // txtcardnum
@@ -123,7 +142,7 @@
             this.txtcardnum.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtcardnum.Name = "txtcardnum";
             this.txtcardnum.ReadOnly = true;
-            this.txtcardnum.Size = new System.Drawing.Size(136, 23);
+            this.txtcardnum.Size = new System.Drawing.Size(136, 27);
             this.txtcardnum.TabIndex = 7;
             // 
             // txtslavenum
@@ -132,7 +151,7 @@
             this.txtslavenum.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtslavenum.Name = "txtslavenum";
             this.txtslavenum.ReadOnly = true;
-            this.txtslavenum.Size = new System.Drawing.Size(136, 23);
+            this.txtslavenum.Size = new System.Drawing.Size(136, 27);
             this.txtslavenum.TabIndex = 8;
             // 
             // label4
@@ -140,7 +159,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(214, 217);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 16);
+            this.label4.Size = new System.Drawing.Size(102, 19);
             this.label4.TabIndex = 9;
             this.label4.Text = "04pi Node ID";
             // 
@@ -150,7 +169,7 @@
             this.cmb04PInode.Location = new System.Drawing.Point(317, 209);
             this.cmb04PInode.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmb04PInode.Name = "cmb04PInode";
-            this.cmb04PInode.Size = new System.Drawing.Size(136, 24);
+            this.cmb04PInode.Size = new System.Drawing.Size(136, 27);
             this.cmb04PInode.TabIndex = 10;
             // 
             // cmbDRIVERnode
@@ -159,7 +178,7 @@
             this.cmbDRIVERnode.Location = new System.Drawing.Point(317, 264);
             this.cmbDRIVERnode.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbDRIVERnode.Name = "cmbDRIVERnode";
-            this.cmbDRIVERnode.Size = new System.Drawing.Size(136, 24);
+            this.cmbDRIVERnode.Size = new System.Drawing.Size(136, 27);
             this.cmbDRIVERnode.TabIndex = 11;
             // 
             // label5
@@ -167,7 +186,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(214, 272);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(70, 16);
+            this.label5.Size = new System.Drawing.Size(88, 19);
             this.label5.TabIndex = 12;
             this.label5.Text = "motor num";
             // 
@@ -176,7 +195,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(214, 323);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(76, 16);
+            this.label6.Size = new System.Drawing.Size(93, 19);
             this.label6.TabIndex = 13;
             this.label6.Text = "I/O Node ID";
             // 
@@ -186,7 +205,7 @@
             this.cmbIOnode.Location = new System.Drawing.Point(317, 315);
             this.cmbIOnode.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbIOnode.Name = "cmbIOnode";
-            this.cmbIOnode.Size = new System.Drawing.Size(136, 24);
+            this.cmbIOnode.Size = new System.Drawing.Size(136, 27);
             this.cmbIOnode.TabIndex = 14;
             // 
             // DMCtimer
@@ -195,7 +214,6 @@
             // 
             // btnCameraConnect
             // 
-            this.btnCameraConnect.Enabled = false;
             this.btnCameraConnect.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.btnCameraConnect.Location = new System.Drawing.Point(44, 153);
             this.btnCameraConnect.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -211,7 +229,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(214, 369);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(66, 16);
+            this.label7.Size = new System.Drawing.Size(82, 19);
             this.label7.TabIndex = 16;
             this.label7.Text = "Camera ID";
             // 
@@ -221,26 +239,30 @@
             this.cmbCameraID.Location = new System.Drawing.Point(317, 361);
             this.cmbCameraID.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cmbCameraID.Name = "cmbCameraID";
-            this.cmbCameraID.Size = new System.Drawing.Size(136, 24);
+            this.cmbCameraID.Size = new System.Drawing.Size(136, 27);
             this.cmbCameraID.TabIndex = 17;
             this.cmbCameraID.SelectedIndexChanged += new System.EventHandler(this.cmbCameraID_SelectedIndexChanged);
             // 
             // txtCamState
             // 
-            this.txtCamState.Location = new System.Drawing.Point(317, 408);
+            this.txtCamState.Location = new System.Drawing.Point(317, 530);
             this.txtCamState.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtCamState.Name = "txtCamState";
             this.txtCamState.ReadOnly = true;
-            this.txtCamState.Size = new System.Drawing.Size(136, 23);
+            this.txtCamState.Size = new System.Drawing.Size(136, 27);
             this.txtCamState.TabIndex = 18;
             // 
             // pictureBox
             // 
-            this.pictureBox.Location = new System.Drawing.Point(518, 37);
+            this.pictureBox.Location = new System.Drawing.Point(712, 12);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(299, 320);
+            this.pictureBox.Size = new System.Drawing.Size(547, 398);
             this.pictureBox.TabIndex = 19;
             this.pictureBox.TabStop = false;
+            // 
+            // timer_Inspect
+            // 
+            this.timer_Inspect.Tick += new System.EventHandler(this.timer_Inspect_Tick);
             // 
             // richText_message
             // 
@@ -250,11 +272,201 @@
             this.richText_message.TabIndex = 21;
             this.richText_message.Text = "";
             // 
+            // btnPmove
+            // 
+            this.btnPmove.Location = new System.Drawing.Point(475, 322);
+            this.btnPmove.Name = "btnPmove";
+            this.btnPmove.Size = new System.Drawing.Size(122, 33);
+            this.btnPmove.TabIndex = 22;
+            this.btnPmove.Text = "clockwise";
+            this.btnPmove.UseVisualStyleBackColor = true;
+            this.btnPmove.Click += new System.EventHandler(this.btnPmove_Click);
+            // 
+            // btnNmove
+            // 
+            this.btnNmove.Location = new System.Drawing.Point(475, 361);
+            this.btnNmove.Name = "btnNmove";
+            this.btnNmove.Size = new System.Drawing.Size(122, 33);
+            this.btnNmove.TabIndex = 23;
+            this.btnNmove.Text = "anti-clockwise";
+            this.btnNmove.UseVisualStyleBackColor = true;
+            this.btnNmove.Click += new System.EventHandler(this.btnNmove_Click);
+            // 
+            // cboDIST
+            // 
+            this.cboDIST.Location = new System.Drawing.Point(574, 275);
+            this.cboDIST.Name = "cboDIST";
+            this.cboDIST.Size = new System.Drawing.Size(100, 27);
+            this.cboDIST.TabIndex = 24;
+            // 
+            // txtMaxVel
+            // 
+            this.txtMaxVel.Location = new System.Drawing.Point(574, 242);
+            this.txtMaxVel.Name = "txtMaxVel";
+            this.txtMaxVel.Size = new System.Drawing.Size(100, 27);
+            this.txtMaxVel.TabIndex = 25;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label8.Location = new System.Drawing.Point(467, 245);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(101, 19);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "motor speed:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label9.Location = new System.Drawing.Point(530, 278);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(38, 19);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "dist:";
+            // 
+            // btnRepeat
+            // 
+            this.btnRepeat.Location = new System.Drawing.Point(475, 400);
+            this.btnRepeat.Name = "btnRepeat";
+            this.btnRepeat.Size = new System.Drawing.Size(122, 33);
+            this.btnRepeat.TabIndex = 28;
+            this.btnRepeat.Text = "repeat";
+            this.btnRepeat.UseVisualStyleBackColor = true;
+            this.btnRepeat.Click += new System.EventHandler(this.btnRepeat_Click);
+            // 
+            // btnStop
+            // 
+            this.btnStop.Enabled = false;
+            this.btnStop.Location = new System.Drawing.Point(475, 439);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(122, 33);
+            this.btnStop.TabIndex = 29;
+            this.btnStop.Text = "Stop";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
+            // btnSvon
+            // 
+            this.btnSvon.BackColor = System.Drawing.SystemColors.Control;
+            this.btnSvon.Location = new System.Drawing.Point(475, 194);
+            this.btnSvon.Name = "btnSvon";
+            this.btnSvon.Size = new System.Drawing.Size(122, 39);
+            this.btnSvon.TabIndex = 30;
+            this.btnSvon.Text = "Svon On";
+            this.btnSvon.UseVisualStyleBackColor = true;
+            this.btnSvon.Click += new System.EventHandler(this.btnSvon_Click);
+            // 
+            // txtERR
+            // 
+            this.txtERR.Location = new System.Drawing.Point(559, 131);
+            this.txtERR.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtERR.Name = "txtERR";
+            this.txtERR.ReadOnly = true;
+            this.txtERR.Size = new System.Drawing.Size(136, 27);
+            this.txtERR.TabIndex = 32;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(559, 84);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
+            this.textBox3.Size = new System.Drawing.Size(136, 27);
+            this.textBox3.TabIndex = 33;
+            // 
+            // txtcommand
+            // 
+            this.txtcommand.Location = new System.Drawing.Point(559, 37);
+            this.txtcommand.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.txtcommand.Name = "txtcommand";
+            this.txtcommand.ReadOnly = true;
+            this.txtcommand.Size = new System.Drawing.Size(136, 27);
+            this.txtcommand.TabIndex = 34;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label10.Location = new System.Drawing.Point(470, 37);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(83, 19);
+            this.label10.TabIndex = 35;
+            this.label10.Text = "Command";
+            // 
+            // txtspeed
+            // 
+            this.txtspeed.AutoSize = true;
+            this.txtspeed.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.txtspeed.Location = new System.Drawing.Point(499, 85);
+            this.txtspeed.Name = "txtspeed";
+            this.txtspeed.Size = new System.Drawing.Size(53, 19);
+            this.txtspeed.TabIndex = 36;
+            this.txtspeed.Text = "Speed";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("微軟正黑體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.label12.Location = new System.Drawing.Point(508, 131);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(44, 19);
+            this.label12.TabIndex = 37;
+            this.label12.Text = "Error";
+            // 
+            // lbxCam
+            // 
+            this.lbxCam.FormattingEnabled = true;
+            this.lbxCam.ItemHeight = 19;
+            this.lbxCam.Location = new System.Drawing.Point(267, 400);
+            this.lbxCam.Name = "lbxCam";
+            this.lbxCam.Size = new System.Drawing.Size(183, 99);
+            this.lbxCam.TabIndex = 38;
+            this.lbxCam.SelectedIndexChanged += new System.EventHandler(this.lbxCam_SelectedIndexChanged);
+            // 
+            // timer4PI
+            // 
+            this.timer4PI.Tick += new System.EventHandler(this.timer4PI_Tick);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 500;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // bntResetPos
+            // 
+            this.bntResetPos.Enabled = false;
+            this.bntResetPos.Location = new System.Drawing.Point(475, 478);
+            this.bntResetPos.Name = "bntResetPos";
+            this.bntResetPos.Size = new System.Drawing.Size(122, 33);
+            this.bntResetPos.TabIndex = 39;
+            this.bntResetPos.Text = " Reset Pos";
+            this.bntResetPos.UseVisualStyleBackColor = true;
+            this.bntResetPos.Click += new System.EventHandler(this.bntResetPos_Click);
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1023, 570);
+            this.ClientSize = new System.Drawing.Size(1271, 570);
+            this.Controls.Add(this.bntResetPos);
+            this.Controls.Add(this.lbxCam);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.txtspeed);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.txtcommand);
+            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.txtERR);
+            this.Controls.Add(this.btnSvon);
+            this.Controls.Add(this.btnStop);
+            this.Controls.Add(this.btnRepeat);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.txtMaxVel);
+            this.Controls.Add(this.cboDIST);
+            this.Controls.Add(this.btnNmove);
+            this.Controls.Add(this.btnPmove);
             this.Controls.Add(this.richText_message);
             this.Controls.Add(this.pictureBox);
             this.Controls.Add(this.txtCamState);
@@ -310,6 +522,25 @@
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.Timer timer_Inspect;
         private System.Windows.Forms.RichTextBox richText_message;
+        private System.Windows.Forms.Button btnPmove;
+        private System.Windows.Forms.Button btnNmove;
+        private System.Windows.Forms.TextBox cboDIST;
+        private System.Windows.Forms.TextBox txtMaxVel;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button btnRepeat;
+        private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.Button btnSvon;
+        private System.Windows.Forms.TextBox txtERR;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox txtcommand;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label txtspeed;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ListBox lbxCam;
+        private System.Windows.Forms.Timer timer4PI;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button bntResetPos;
     }
 }
 
