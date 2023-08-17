@@ -27,7 +27,7 @@ using PCI_DMC;
 using PCI_DMC_ERR;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using AForge.Math.Geometry;
-
+using System.Threading.Tasks;
 namespace defect_CALIN
 {
 
@@ -41,9 +41,8 @@ namespace defect_CALIN
         ushort[] NodeID = new ushort[32];
         byte[] value = new byte[10];
         ushort gNodeNum;
-        bool emgSTOP=false;
-        bool stop = false;
-        bool svon = false;
+        bool emgSTOP = false;
+        bool direction = false;    //true=clockwise
         //camera//
 
         public int videoDeviceIdx = -1;
@@ -58,6 +57,7 @@ namespace defect_CALIN
         public int ImgHeight = 0;
         UsbCamera camera;
 
+        Dictionary<string, bool> repeatState = new Dictionary<string, bool>();
         public Form1()
         {
             InitializeComponent();
@@ -91,7 +91,7 @@ namespace defect_CALIN
 
         private void startbtn_Click(object sender, EventArgs e)
         {
-            ushort i, card_no = 0, lMask = 0x1,p=0;
+            ushort i, card_no = 0, lMask = 0x1, p = 0;
             uint DeviceType = 0, IdentityObject = 0;
 
             //開啟軸卡
@@ -194,30 +194,25 @@ namespace defect_CALIN
                     nodeid = 9;
                     Enable = 1;
                     rc = CPCI_DMC.CS_DMC_01_set_rm_output_active(gCardNo, nodeid, SlotID, Enable);
-
-
+                    for (i = 1; i <= 4; i++)
+                    {
+                        /* A2F Servo Power ON/Power OFF */
+                        rc = CPCI_DMC.CS_DMC_01_ipo_set_svon(gCardNo, i, 0, 1);//on
+                    }
+                    Control_enabled(true);
                 }
             }
         }
-
-        private void Pmovef(ushort nodeid)
+        private void Control_enabled(bool state)
         {
-            int m_StrVel = 0, m_MaxVel = Int32.Parse(txtMaxVel.Text);
-            double m_Tacc = 0.5, m_Tdec = 0.5;
-            int m_Dist = Int32.Parse(cboDIST.Text);
-            //太重最大速限250
-            if ((nodeid == 2))
-            {
-                if (m_MaxVel > 250) m_MaxVel = 250;
-            }
-            ////////////////
+            System.Windows.Forms.Button[] buttonsToEnable = { btnPmove, btnNmove, btnRepeat, btnAllStop, bntResetPos, btnAllStop };
 
-            if (emgSTOP == false)
+            foreach (System.Windows.Forms.Button button in buttonsToEnable)
             {
-                rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
+                button.Enabled = state;
             }
         }
-        private void Nmovef(ushort nodeid)
+        private void Movef(ushort nodeid)
         {
             int m_StrVel = 0, m_MaxVel = Int32.Parse(txtMaxVel.Text);
             double m_Tacc = 0.5, m_Tdec = 0.5;
@@ -229,61 +224,82 @@ namespace defect_CALIN
             }
             ///////////////////////////
 
-            if (emgSTOP == false)
-            {
+            if (direction)
+                rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
+            else
                 rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, 0 - m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
-            }
         }
         private void btnPmove_Click(object sender, EventArgs e)
         {
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
-            Pmovef(nodeid);
+            direction = true;
+            Movef(nodeid);
         }
 
         private void btnNmove_Click(object sender, EventArgs e)
         {
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
-            Nmovef(nodeid);
+            direction = false;
+            Movef(nodeid);
         }
 
         private void btnRepeat_Click(object sender, EventArgs e)
         {
-            stop = false;
-            btnStop.Enabled = true;
+            btnNmove.Enabled = false;
+            btnPmove.Enabled = false;
             timer1.Enabled = true;
         }
 
-        private void btnStop_Click(object sender, EventArgs e)
+        private void btnAllStop_Click(object sender, EventArgs e)
         {
-            stop = true;
-        }
-
-        private void btnSvon_Click(object sender, EventArgs e)
-        {
-            if (svon == false)
+            timer1.Stop();
+            for (ushort nodeid = 1; nodeid <= 4; nodeid++)
             {
-                for (ushort i = 1; i <= 4; i++)
-                {
-                    btnSvon.Text = "Svon OFF";
-                    /* A2F Servo Power ON/Power OFF */
-                    rc = CPCI_DMC.CS_DMC_01_ipo_set_svon(gCardNo, i, 0, 1);//on
-                }
-                svon = true;
+                stop(nodeid);
+            }
+            if (emgSTOP == false)
+            {
+                emgSTOP = true;
             }
             else
             {
-                for (ushort i = 1; i <= 4; i++)
-                {
-                    btnSvon.Text = "Svon ON";
-                    /* A2F Servo Power ON/Power OFF */
-                    rc = CPCI_DMC.CS_DMC_01_ipo_set_svon(gCardNo, i, 0, 1);//on
-                }
-                svon = false;
+                emgSTOP = false;
             }
         }
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            ushort nodeid = ushort.Parse(cmb04PInode.Text);
+            stop(nodeid);
+        }
+        private void stop(ushort nodeid)
+        {
+            rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, nodeid, 0, 0.1);
+            DelayThreadSleep(100);//不可減少
+        }
+        //private async void btnStop_Click(object sender, EventArgs e)
+        //{
+        //    for (ushort nodeid = 1; nodeid <= 4; nodeid++)
+        //    {
+        //        rc = await StopNodeAsync(gCardNo, nodeid, 0, 0.1);
+        //        await DelayAsync(100);
+        //    }
+        //}
+
+        //private async Task<int> StopNodeAsync(int cardNo, ushort nodeId, int param1, double param2)
+        //{
+        //    return await Task.Run(() =>
+        //    {
+        //        return CPCI_DMC.CS_DMC_01_sd_stop(cardNo, nodeId, param1, param2);
+        //    });
+        //}
+
+        //private async Task DelayAsync(int milliseconds)
+        //{
+        //    await Task.Delay(milliseconds);
+        //}
+
         private void timer4PI_Tick(object sender, EventArgs e)
         {
-
             //Motion status
             int cmd = 0, spd = 0;
             ushort MC_done = 0;
@@ -342,6 +358,16 @@ namespace defect_CALIN
         private void cmbCameraID_SelectedIndexChanged(object sender, EventArgs e)
         {
             videoDeviceIdx = cmbCameraID.SelectedIndex;
+            if (videoDeviceIdx < 0)
+            {
+                MessageBox.Show("No found camera");
+                btnCameraConnect.Enabled = false;
+                return;
+            }
+            else
+            {
+                btnCameraConnect.Enabled = true;
+            }
             if (videoDeviceIdx != -1)
             {
                 UsbCamera.VideoFormat[] formats = UsbCamera.GetVideoFormat(videoDeviceIdx);
@@ -370,23 +396,14 @@ namespace defect_CALIN
         private void timer1_Tick(object sender, EventArgs e)
         {
             int speed = 0;
-            bool direction = false;
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
             rc = CPCI_DMC.CS_DMC_01_get_current_speed(gCardNo, nodeid, 0, ref speed);
-                if (speed == 0)
-                {
-                    if (direction)
-                    {
-                        Pmovef(nodeid);
-                        direction = false;
-                    }
-                    else
-                    {
-                        Nmovef(nodeid);
-                        direction = true;
-                    }
-                }
-            
+            if (speed == 0)
+            {
+                Movef(nodeid);
+                direction = !direction;
+            }
+
         }
 
         private void bntResetPos_Click(object sender, EventArgs e)
@@ -394,6 +411,12 @@ namespace defect_CALIN
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
             //btnHOMEf(nodeid);
         }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            btnexit_Click(sender, e);
+        }
+
         //private void btnHOMEf(ushort nodeid)
         //{
 
@@ -488,19 +511,40 @@ namespace defect_CALIN
             CPCI_DMC.CS_DMC_01_close();
             Application.Exit();
         }
+
+        private void pictureBox_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSaveimg_Click(object sender, EventArgs e)
+        {
+            {
+                string EditPath = "C:\\Users\\a1525\\Desktop\\Code\\Python\\T_Poject\\defate_CALIN\\img"; // 圖片的本地路徑
+                try
+                {
+                    Bitmap image = new Bitmap(ccdbmp);
+                    string numericFormat = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    string fileName = $"image_{numericFormat}.jpg"; // 使用适当的文件名生成规则
+                    string filePath = Path.Combine(EditPath, fileName);
+                    image.Save(filePath);
+                    image.Dispose(); // 釋放資源
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("save fail" + ex);
+                }
+            }
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void btnCameraConnect_Click(object sender, EventArgs e)
         {
-            //// Check if a camera is connected
-            if (videoDeviceIdx < 0)
-            {
-                MessageBox.Show("No found camera");
-                btnCameraConnect.Enabled = false;
-                return;
-            }
-            else
-                btnCameraConnect.Enabled = true;
-
-            if (btnCameraConnect.Enabled)
+            if (btnCameraConnect.Text == "Camera On" && btnCameraConnect.Enabled)
             {
                 if (videoDeviceIdx != -1)
                 {
@@ -519,32 +563,39 @@ namespace defect_CALIN
                     camera = new UsbCamera(videoDeviceIdx, formats[ResolutionIdx]);
                     camera.Start();
 
-                    //pictureBox.Width = (int)(ImgWidth / Zoom);
-                    //pictureBox.Height = (int)(ImgHeight / Zoom);
-                    pictureBox.Width = (int)(ImgWidth );
-                    pictureBox.Height = (int)(ImgHeight);
-                    //pictureBox1.Width = (int)(ImgWidth / Zoom);
-                    //pictureBox1.Height = (int)(ImgHeight / Zoom);
-                    //pictureBox4.Width = (int)(ImgWidth / Zoom);
-                    //pictureBox4.Height = (int)(ImgHeight / Zoom);
-
+                    pictureBox.Width = (int)(ImgWidth / Zoom);
+                    pictureBox.Height = (int)(ImgHeight / Zoom);
 
                     ////UI  
                     timer_Inspect.Enabled = true; //開攝影機即啟動Timer
 
                     S_ROI = new Rectangle(750, 480, 435, 80);
+                    btnCameraConnect.Text = "Camera Off";
+                    btnSaveimg.Enabled = true;
                 }
             }
             else
             {
                 camera.Stop();
                 timer_Inspect.Enabled = false; //關攝影機即停止Timer
+                pictureBox.Image = null;
+                btnSaveimg.Enabled = false;
+                btnCameraConnect.Text = "Camera On";
             }
 
         }
         private void lbxCam_SelectedIndexChanged(object sender, EventArgs e)
         {
             ResolutionIdx = lbxCam.SelectedIndex;
+
+        }
+        private void DelayThreadSleep(int time)
+        {
+            for (int i = 0; i < (time / 5); i++)
+            {
+                Thread.Sleep(5);
+                Application.DoEvents();
+            }
         }
         //private void Cmdreset(ushort nodeid)
         //{

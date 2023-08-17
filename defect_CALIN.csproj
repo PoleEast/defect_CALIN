@@ -244,6 +244,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Log.txt" />
     <Content Include="src\ico\8703971_camera_dynamic_color_icon.ico" />
   </ItemGroup>
   <ItemGroup>
