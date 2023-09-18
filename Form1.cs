@@ -28,6 +28,10 @@ using PCI_DMC_ERR;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using AForge.Math.Geometry;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using defect_CALIN.src;
+using defect_CALIN.Controls;
+
 namespace defect_CALIN
 {
 
@@ -42,7 +46,9 @@ namespace defect_CALIN
         byte[] value = new byte[10];
         ushort gNodeNum;
         bool emgSTOP = false;
-        bool direction = false;    //true=clockwise
+        uint u32_val;
+        int nodeSpeed=0;
+        bool[,] repeatv;
         //camera//
 
         public int videoDeviceIdx = -1;
@@ -82,11 +88,12 @@ namespace defect_CALIN
             }
             //////////讀設定/////////////
             Init.Read_INI_Set();
-
+            richText_message.Text += "初始化完成";
             ///////usb   ccd//////////////////////
             Zoom = 4.0;
             Init.CameraInit(ref cmbCameraID);
             //startbtn_Click(sender, e);
+            richText_message.Text = "相機初始化完成";
         }
 
         private void startbtn_Click(object sender, EventArgs e)
@@ -102,7 +109,7 @@ namespace defect_CALIN
                 txtcardnum.Text = existcard.ToString();
             txtslavenum.Text = "0";
             CmbCardNo.Items.Clear();
-
+            richText_message.Text += "found DMC-NET card";
             //初始化軸卡
             for (i = 0; i < existcard; i++)     //進行軸卡初始化
             {
@@ -122,7 +129,7 @@ namespace defect_CALIN
                     gCardNo = gCardNoList[0];
                 }
             }
-
+            richText_message.Text += "抓取控制卡元件中";
             //建立通訊
             gNodeNum = 0;
             txtslavenum.Text = "0";
@@ -187,8 +194,9 @@ namespace defect_CALIN
                     cmbDRIVERnode.SelectedIndex = 0;
                     cmbIOnode.SelectedIndex = 0;
 
+                    repeatv = new bool[cmb04PInode.Items.Count, 2];
+
                     timer4PI.Enabled = true;
-                    DMCtimer.Enabled = true;
                     /////io_active////////////////////
                     ushort nodeid, SlotID = 0, Enable;
                     nodeid = 9;
@@ -200,23 +208,35 @@ namespace defect_CALIN
                         rc = CPCI_DMC.CS_DMC_01_ipo_set_svon(gCardNo, i, 0, 1);//on
                     }
                     Control_enabled(true);
+                    btnAllStop.Enabled = true;
+                    richText_message.Text = "抓取控制元件完成";
                 }
             }
         }
         private void Control_enabled(bool state)
         {
-            System.Windows.Forms.Button[] buttonsToEnable = { btnPmove, btnNmove, btnRepeat, btnAllStop, bntResetPos, btnAllStop };
+            System.Windows.Forms.Button[] buttonsToEnable = { btnPmove, btnNmove, btnRepeat, bntResetPos };
 
             foreach (System.Windows.Forms.Button button in buttonsToEnable)
             {
                 button.Enabled = state;
             }
         }
-        private void Movef(ushort nodeid)
+        private void Movef(ushort nodeid,bool direction)
         {
-            int m_StrVel = 0, m_MaxVel = Int32.Parse(txtMaxVel.Text);
+            int m_StrVel = 0, m_MaxVel=0;
             double m_Tacc = 0.5, m_Tdec = 0.5;
-            int m_Dist = Int32.Parse(cboDIST.Text);
+            int m_Dist=0;
+            try
+            {
+                m_MaxVel = Int32.Parse(txtMaxVel.Text);
+                m_Dist = Int32.Parse(cboDIST.Text) >= 1500 ? 1500 : Int32.Parse(cboDIST.Text);
+                richText_message.Text = "馬達旋轉中";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
             //太重最大速限250
             if ((nodeid == 2))
             {
@@ -232,38 +252,30 @@ namespace defect_CALIN
         private void btnPmove_Click(object sender, EventArgs e)
         {
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
-            direction = true;
-            Movef(nodeid);
+            Movef(nodeid, true);
         }
 
         private void btnNmove_Click(object sender, EventArgs e)
         {
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
-            direction = false;
-            Movef(nodeid);
+            Movef(nodeid, false);
         }
 
         private void btnRepeat_Click(object sender, EventArgs e)
         {
-            btnNmove.Enabled = false;
+            timer_repeat.Enabled = true;
             btnPmove.Enabled = false;
-            timer1.Enabled = true;
+            btnNmove.Enabled = false;
+            repeatv[int.Parse(cmb04PInode.Text), 0] = true;
         }
 
         private void btnAllStop_Click(object sender, EventArgs e)
         {
-            timer1.Stop();
+            timer_repeat.Stop();
+            Array.Clear(repeatv,0,repeatv.Length);
             for (ushort nodeid = 1; nodeid <= 4; nodeid++)
             {
                 stop(nodeid);
-            }
-            if (emgSTOP == false)
-            {
-                emgSTOP = true;
-            }
-            else
-            {
-                emgSTOP = false;
             }
         }
         private void btnStop_Click(object sender, EventArgs e)
@@ -274,36 +286,17 @@ namespace defect_CALIN
         private void stop(ushort nodeid)
         {
             rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, nodeid, 0, 0.1);
+            repeatv[(int)nodeid, 0] = false;
+            richText_message.Text = "nodeid"+nodeid.ToString()+"停止";
             DelayThreadSleep(100);//不可減少
         }
-        //private async void btnStop_Click(object sender, EventArgs e)
-        //{
-        //    for (ushort nodeid = 1; nodeid <= 4; nodeid++)
-        //    {
-        //        rc = await StopNodeAsync(gCardNo, nodeid, 0, 0.1);
-        //        await DelayAsync(100);
-        //    }
-        //}
 
-        //private async Task<int> StopNodeAsync(int cardNo, ushort nodeId, int param1, double param2)
-        //{
-        //    return await Task.Run(() =>
-        //    {
-        //        return CPCI_DMC.CS_DMC_01_sd_stop(cardNo, nodeId, param1, param2);
-        //    });
-        //}
-
-        //private async Task DelayAsync(int milliseconds)
-        //{
-        //    await Task.Delay(milliseconds);
-        //}
-
+        //抓取節點資訊
         private void timer4PI_Tick(object sender, EventArgs e)
         {
             //Motion status
-            int cmd = 0, spd = 0;
-            ushort MC_done = 0;
-            uint MC_status = 0, err = 0;
+            int cmd = 0;
+            uint  err = 0;
 
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
             //Status
@@ -313,21 +306,21 @@ namespace defect_CALIN
                 txtcommand.Text = cmd.ToString();
             }
 
-            rc = CPCI_DMC.CS_DMC_01_get_current_speed(gCardNo, nodeid, 0, ref spd);       //Speed
+            rc = CPCI_DMC.CS_DMC_01_get_current_speed(gCardNo, nodeid, 0, ref nodeSpeed);       //Speed
             if (rc == 0)
             {
-                txtspeed.Text = spd.ToString();
+                txtspeed.Text = nodeSpeed.ToString();
+                if (nodeSpeed != 0)
+                {
+                    Control_enabled(false);
+                    lbworking.ForeColor = Color.Green;
+                }
+                else
+                {
+                    lbworking.ForeColor = Color.Red;
+                    Control_enabled(true);
+                }
             }
-            //rc = CPCI_DMC.CS_DMC_01_motion_done(gCardNo, nodeid, 0, ref MC_done);         //Motion done
-            //if (rc == 0)
-            //{
-            //    txtmotion.Text = MC_done.ToString();
-            //}
-            //rc = CPCI_DMC.CS_DMC_01_motion_status(gCardNo, nodeid, 0, ref MC_status);     //Motion status
-            //if (rc == 0)
-            //{
-            //    txtIO.Text = MC_status.ToString("X2");
-            //}
             rc = CPCI_DMC.CS_DMC_01_get_alm_code(gCardNo, nodeid, 0, ref err);          //Error
             if (rc == 0)
             {
@@ -386,122 +379,116 @@ namespace defect_CALIN
                 }
             }
         }
+        //更新影像
         private void timer_Inspect_Tick(object sender, EventArgs e)
         {
             ccdbmp = camera.GetBitmap();
 
-            pictureBox.Image = ccdbmp;
+            ptbbefore.Image = ccdbmp;
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void timer_repeat_Tick(object sender, EventArgs e)
         {
-            int speed = 0;
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
-            rc = CPCI_DMC.CS_DMC_01_get_current_speed(gCardNo, nodeid, 0, ref speed);
-            if (speed == 0)
+            for (int i = 0; i <= repeatv.GetLength(0); i++)
             {
-                Movef(nodeid);
-                direction = !direction;
+                if (repeatv[i, 0])
+                {
+                    rc = CPCI_DMC.CS_DMC_01_get_current_speed(gCardNo, nodeid, 0, ref nodeSpeed);
+                    if (nodeSpeed == 0)
+                    {
+                        Movef(nodeid, repeatv[i, 1]);
+                        repeatv[i, 1] = !repeatv[i, 1];
+                    }
+                }
             }
-
         }
 
         private void bntResetPos_Click(object sender, EventArgs e)
         {
             ushort nodeid = ushort.Parse(cmb04PInode.Text);
-            //btnHOMEf(nodeid);
+            btnhomef(nodeid);
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+
+        private void btnhomef(ushort nodeid)
         {
-            btnexit_Click(sender, e);
+
+            ////////home////////////////
+            int m_StrVel = 0, m_MaxVel = 1000;
+            if (nodeid == 2) m_MaxVel = 250;
+            double m_Tacc = 0.5, m_Tdec = 0.5;
+            int m_Dist = 35500;
+            richText_message.Text = "nodeid" + nodeid.ToString() + "復歸中";
+
+            if (emgSTOP == false)
+            {
+                if (Get_Servo_ORG_status(nodeid) == false)    ///Get Servo DI status//未在原點
+                { //快速倒退
+                    rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, 0 - m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
+                }
+            }
+            while (Get_Servo_ORG_status(nodeid) == false)    ///Get Servo DI status//未在原點
+            {
+                DelayThreadSleep(50);
+                if (emgSTOP == true) return;
+            }
+            ///////原點stop//////
+            rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, nodeid, 0, 0.1);
+            DelayThreadSleep(100);//不可減少
+            if (emgSTOP == false)
+            {
+                // 前進
+                m_Dist = 500;
+                rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
+                ushort MC_done = 2;
+                while (MC_done != 0) //move
+                {
+                    DelayThreadSleep(50);
+                    rc = CPCI_DMC.CS_DMC_01_motion_done(gCardNo, nodeid, 0, ref MC_done);         //Motion done
+                }
+            }
+            if (emgSTOP == false)
+            {
+
+                //慢速倒退
+                m_MaxVel = 100;
+                rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, 0 - m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
+                while (Get_Servo_ORG_status(nodeid) == false)    ///Get Servo DI status//未在原點
+                {
+                    DelayThreadSleep(50);
+                    if (emgSTOP == true) return;
+                }
+
+                ///////原點stop//////
+                rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, nodeid, 0, 0.1);
+
+                ////////////////////
+                CPCI_DMC.CS_DMC_01_set_position(gCardNo, nodeid, 0, 0);
+                CPCI_DMC.CS_DMC_01_set_command(gCardNo, nodeid, 0, 0);
+            }
+            richText_message.Text = "nodeid" + nodeid.ToString() + "復歸完成";
         }
+        private bool Get_Servo_ORG_status(ushort nodeid)
+        {
+            bool ORG = false;
+            //Get Servo DI status
+            rc = CPCI_DMC.CS_DMC_01_set_monitor(gCardNo, nodeid, 0, 39); //Read DI
+            Thread.Sleep(20);
+            rc = CPCI_DMC.CS_DMC_01_get_monitor(gCardNo, nodeid, 0, ref u32_val);
 
-        //private void btnHOMEf(ushort nodeid)
-        //{
-
-        //    ////////home////////////////
-        //    int m_StrVel = 0, m_MaxVel = 1000;
-        //    if (nodeid == 2) m_MaxVel = 250;
-        //    double m_Tacc = 0.5, m_Tdec = 0.5;
-        //    int m_Dist = 0;
-        //    ///現在位置 //正向移動
-        //    int CurrentPOS = 0;
-        //    if (nodeid == 1)
-        //        CurrentPOS = pos_1;
-        //    if (nodeid == 2)
-        //        CurrentPOS = pos_2;
-        //    if (nodeid == 3)
-        //        CurrentPOS = pos_3;
-        //    if (nodeid == 4)
-        //        CurrentPOS = pos_4;
-        //    if (CurrentPOS < 0)  //正向移動
-        //        if (emgSTOP == false)
-        //        {
-        //            // 前進
-        //            m_Dist = -CurrentPOS;
-        //            rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
-        //            ushort MC_done = 2;
-        //            while (MC_done != 0) //move
-        //            {
-        //                DelayThreadSleep(50);
-        //                rc = CPCI_DMC.CS_DMC_01_motion_done(gCardNo, nodeid, 0, ref MC_done);         //Motion done
-        //            }
-        //        }
-        //    ///////////////
-
-        //    m_Dist = 35500;
-
-        //    if (emgSTOP == false)
-        //    {
-        //        if (Get_Servo_ORG_status(nodeid) == false)    ///Get Servo DI status//未在原點
-        //        { //快速倒退
-        //            rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, 0 - m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
-        //        }
-        //    }
-        //    while (Get_Servo_ORG_status(nodeid) == false)    ///Get Servo DI status//未在原點
-        //    {
-        //        DelayThreadSleep(50);
-        //        if (emgSTOP == true) return;
-        //    }
-        //    ///////原點stop//////
-        //    rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, nodeid, 0, 0.1);
-        //    DelayThreadSleep(100);//不可減少
-        //    if (emgSTOP == false)
-        //    {
-        //        // 前進
-        //        m_Dist = 500;
-        //        rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
-        //        ushort MC_done = 2;
-        //        while (MC_done != 0) //move
-        //        {
-        //            DelayThreadSleep(50);
-        //            rc = CPCI_DMC.CS_DMC_01_motion_done(gCardNo, nodeid, 0, ref MC_done);         //Motion done
-        //        }
-        //    }
-        //    if (emgSTOP == false)
-        //    {
-
-        //        //慢速倒退
-        //        m_MaxVel = 100;
-        //        rc = CPCI_DMC.CS_DMC_01_start_sr_move(gCardNo, nodeid, 0, 0 - m_Dist, m_StrVel, m_MaxVel, m_Tacc, m_Tdec);
-        //        while (Get_Servo_ORG_status(nodeid) == false)    ///Get Servo DI status//未在原點
-        //        {
-        //            DelayThreadSleep(50);
-        //            if (emgSTOP == true) return;
-        //        }
-
-        //        ///////原點stop//////
-        //        rc = CPCI_DMC.CS_DMC_01_sd_stop(gCardNo, nodeid, 0, 0.1);
-
-        //        ////////////////////
-        //        CPCI_DMC.CS_DMC_01_set_position(gCardNo, nodeid, 0, 0);
-        //        CPCI_DMC.CS_DMC_01_set_command(gCardNo, nodeid, 0, 0);
-        //    }
-        //    btnHOME.BackColor = SystemColors.Control;
-
-        //}
-
+            if ((nodeid == 1) | (nodeid == 2) | (nodeid == 3))
+            {
+                //ORG  
+                ORG = ((u32_val & 0x0010) != 0) ? false : true;
+            }
+            if (nodeid == 4)
+            {
+                //ORG 
+                ORG = ((u32_val & 0x0010) != 0) ? true : false;
+            }
+            return ORG;
+        }
         //close Application
         private void btnexit_Click(object sender, EventArgs e)
         {
@@ -509,12 +496,7 @@ namespace defect_CALIN
             for (i = 0; i < existcard; i++) rc = CPCI_DMC.CS_DMC_01_reset_card(gCardNoList[i]);
 
             CPCI_DMC.CS_DMC_01_close();
-            Application.Exit();
-        }
-
-        private void pictureBox_Click(object sender, EventArgs e)
-        {
-
+            System.Windows.Forms.Application.Exit();
         }
 
         private void btnSaveimg_Click(object sender, EventArgs e)
@@ -528,7 +510,8 @@ namespace defect_CALIN
                     string fileName = $"image_{numericFormat}.jpg"; // 使用适当的文件名生成规则
                     string filePath = Path.Combine(EditPath, fileName);
                     image.Save(filePath);
-                    image.Dispose(); // 釋放資源
+                    ptbafter.Image = image;
+                    richText_message.Text = "圖片儲存完成";
                 }
                 catch (Exception ex)
                 {
@@ -537,10 +520,6 @@ namespace defect_CALIN
             }
         }
 
-        private void label11_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void btnCameraConnect_Click(object sender, EventArgs e)
         {
@@ -563,8 +542,8 @@ namespace defect_CALIN
                     camera = new UsbCamera(videoDeviceIdx, formats[ResolutionIdx]);
                     camera.Start();
 
-                    pictureBox.Width = (int)(ImgWidth / Zoom);
-                    pictureBox.Height = (int)(ImgHeight / Zoom);
+                    ptbbefore.Width = (int)(ImgWidth / Zoom);
+                    ptbbefore.Height = (int)(ImgHeight / Zoom);
 
                     ////UI  
                     timer_Inspect.Enabled = true; //開攝影機即啟動Timer
@@ -572,30 +551,49 @@ namespace defect_CALIN
                     S_ROI = new Rectangle(750, 480, 435, 80);
                     btnCameraConnect.Text = "Camera Off";
                     btnSaveimg.Enabled = true;
+                    richText_message.Text = "相機開啟成功";
                 }
             }
             else
             {
                 camera.Stop();
                 timer_Inspect.Enabled = false; //關攝影機即停止Timer
-                pictureBox.Image = null;
+                ptbbefore.Image = null;
                 btnSaveimg.Enabled = false;
                 btnCameraConnect.Text = "Camera On";
+                richText_message.Text = "相機關閉";
             }
-
         }
+
+        private async void btnHE_Click(object sender, EventArgs e)
+        {
+            Bitmap bitmap = new Bitmap(ptbafter.Image);
+            var bitmapHE=await Img_Processing.ImageEH(bitmap);
+            richText_message.Text += "HE完成";
+            ptbafter.Image = bitmapHE;
+        }
+
         private void lbxCam_SelectedIndexChanged(object sender, EventArgs e)
         {
             ResolutionIdx = lbxCam.SelectedIndex;
 
+        }
+        private void ptbafter_ImageChanged(object sender, EventArgs e)
+        {
+            if (ptbafter.Image != null)
+                btnHE.Enabled=true;
         }
         private void DelayThreadSleep(int time)
         {
             for (int i = 0; i < (time / 5); i++)
             {
                 Thread.Sleep(5);
-                Application.DoEvents();
+                System.Windows.Forms.Application.DoEvents();
             }
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            btnexit_Click(sender, e);
         }
         //private void Cmdreset(ushort nodeid)
         //{
